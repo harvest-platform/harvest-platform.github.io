@@ -10,7 +10,7 @@ At a architectural level, the fundamental unit is a service. A service is compos
 
 The **API** layer exposes an interface for clients to interact with. The role of the API component is translate a request/message into a native format so the server can handle it. Likewise once the server has handled the request, the API may need to respond the client to return data or acknowledged that the request has been handled.
 
-Implementing the API layer requires selecting the set of protocols necessary to satisfy the expectations of the client. These typically include HTTP, JSON+RPC, gRPC, or other custom ones. Second, a protocol must choose the set of transport mechanisms that are necessary such as HTTP, 0MQ, or raw TCP. The final decision is choice of serialization formats to support for messages such as JSON, MessagePack, and Protocol Buffers.
+Implementing the API layer requires selecting the set of protocols necessary to satisfy the expectations of the client. These typically include [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol), [JSON+RPC](http://json-rpc.org/), [gRPC](http://grpc.io/), or other custom ones. Second, a protocol must choose the set of transport mechanisms that are necessary such as HTTP, [0MQ](http://zeromq.org/), or raw TCP. The final decision is choice of serialization formats to support for messages such as [JSON](http://json.org/), [MessagePack](http://msgpack.org/), and [Protocol Buffers](https://developers.google.com/protocol-buffers/).
 
 In practice, the protocols, transports, and serialization formats are standardized across services so these decisions do not need to be made each time a new service is being developed.
 
