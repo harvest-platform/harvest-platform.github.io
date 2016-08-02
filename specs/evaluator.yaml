@@ -1,0 +1,230 @@
+swagger: "2.0"
+
+info:
+  title: Harvest Query Evaluator
+  description: Service specification for query evaluator.
+  version: "0.1.0"
+
+consumes:
+  - application/json
+  - application/msgpack
+
+produces:
+  - application/json
+  - application/msgpack
+
+paths:
+  /:
+    get:
+      responses:
+        204:
+          description: Service root.
+
+        503:
+          description: Service is unavailable.
+          schema:
+            $ref: '#/definitions/ServiceUnavailable'
+
+  /catalog:
+    get:
+      responses:
+        200:
+          description: Catalog of concepts.
+          schema:
+            $ref: '#/definitions/Catalog'
+
+  /validate:
+    post:
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Query'
+
+      responses:
+        204:
+          description: Validate a query.
+
+        422:
+          description: Invalid query expression.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /plan:
+    post:
+      responses:
+        200:
+          description: Generate an evaluation plan for the query.
+
+        422:
+          description: Invalid query expression.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /count:
+    post:
+      responses:
+        200:
+          description: Count of unique entities that satisfy the query.
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+                format: int64
+
+        422:
+          description: Invalid query expression.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /idents:
+    post:
+      responses:
+        200:
+          description: Identities of unique entities that satisfy the query.
+          schema:
+            type: array
+            items:
+              type: string
+
+        422:
+          description: Invalid query expression.
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+
+      message:
+        type: string
+
+  ServiceUnavailable:
+    type: object
+    properties:
+      retry:
+        type: boolean
+
+  Query:
+    type: object
+    required:
+      - subject
+      - type
+      - term
+
+    properties:
+      subject:
+        type: string
+        description: The ID of the concept representing the subject of the query.
+
+      type:
+        type: string
+        description: The expression type, which must be `query`.
+
+      term:
+        type: object
+        description: The query expression itself.
+
+  Catalog:
+    type: object
+    required:
+      - version
+      - concepts
+
+    properties:
+      version:
+        type: string
+
+      concepts:
+        type: array
+        items:
+          $ref: '#/definitions/Concept'
+
+  Concept:
+    type: object
+    required:
+      - id
+      - label
+
+    properties:
+      id:
+        type: string
+
+      uri:
+        type: string
+
+      label:
+        type: string
+
+      doc:
+        type: string
+
+      keywords:
+        type: string
+
+      type:
+        type: string
+
+      params:
+        type: array
+        items:
+          $ref: '#/definitions/ConceptParam'
+
+  ConceptParam:
+    type: object
+    required:
+      - id
+      - label
+      - type
+      - operators
+
+    properties:
+      id:
+        type: string
+
+      uri:
+        type: string
+
+      label:
+        type: string
+
+      doc:
+        type: string
+
+      required:
+        type: boolean
+
+      type:
+        type: string
+
+      operators:
+        type: array
+        items:
+          $ref: '#/definitions/ParamOperator'
+
+  ParamOperator:
+    type: object
+    required:
+      - id
+      - label
+
+    properties:
+      id:
+        type: string
+
+      uri:
+        type: string
+
+      doc:
+        type: string
+
+      label:
+        type: string
+
+      multiple:
+        type: boolean
