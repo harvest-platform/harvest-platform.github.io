@@ -70,13 +70,17 @@ Examples
 - `range(dob, lte='1975-01-01')` - unbounded lower bound, inclusive
 
 #### `oneof(<term>, value=[<any>...])`
-Match if at least one of the values is satisfied.
+Match if at least one of the values is satisfied. This is semantically equivalent to defining `equals` predicates and wrapping them in `or`.
+
+This operator generally applies to data having a one-to-many structure such as a document field holding an array of values, a reverse foreign key relationship in a relational data model, or any graph structure. However since only one case needs to match, structures that only support one value can be used here as well.
 
 Examples
 - `oneof(diagnosis, ['271.91', '392.18'])`
 
 #### `allof(<term>, value=[<any>...])`
-Match only if all of the values are satisfied.
+Match only if all of the values are satisfied. This is semantically equivalent to defining `equals` predicates and wrapping them in `and`.
+
+See `oneof` above for an explanation of this operator type.
 
 Examples
 - `allof(diagnosis, ['271.91', '392.18'])`
@@ -86,7 +90,6 @@ Match if no value is associated with the term. This is a unary operator and does
 
 Examples
 - `isnull(gender)` - Gender is unknown.
-- `-isnull(location)` - Gender is known, the value does not matter.
 
 ## Logicals
 A _logical_ is special type of predicate that combines two or more predicates using a logical operator such as `AND` and `OR`.
@@ -94,8 +97,35 @@ A _logical_ is special type of predicate that combines two or more predicates us
 #### `and([<pred>...])`
 Apply a logical AND between predicates.
 
+Examples
+
+```
+and(
+  oneof(diagnosis, ['392.17', '392.18']),
+  allof(diagnosis, ['271.91', '271.92']),
+)
+```
+
 #### `or([<pred>...])`
 Apply a logical OR betwen predicates.
 
+Examples
+
+```
+or(
+  search(race, 'latino'),
+  search(race, 'hispanic'),
+)
+```
+
 #### `not(<pred>)`
 Negate a predicate.
+
+Examples
+
+Gender is known, but it doesn't matter what it is.
+
+```
+not(isnull(gender))
+```
+
